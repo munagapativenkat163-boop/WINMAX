@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WINMAX — Virtual Games</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0e1422;color:#fff}
+header{padding:18px 16px;background:#171f32;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:2}
+.logo{font-size:24px;font-weight:800}.coins{background:#26324a;padding:9px 13px;border-radius:20px}
+main{max-width:900px;margin:auto;padding:20px 15px}.hero{background:linear-gradient(135deg,#273b68,#182238);padding:25px;border-radius:18px}
+.hero h1{margin:0 0 8px}.hero p{color:#cbd5e8}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px}
+.card{background:#171f32;border:1px solid #29364f;border-radius:16px;padding:18px}
+.card h3{margin:0 0 8px}.card p{color:#aebbd0;font-size:14px}
+button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer;background:#fff;color:#111}
+.small{font-size:12px;color:#91a0b8}.stats{display:flex;gap:8px;margin-top:18px}.stat{flex:1;background:#171f32;padding:13px;border-radius:12px;text-align:center}
+.stat b{display:block;font-size:20px;margin-top:4px}
+footer{text-align:center;padding:25px;color:#8290a8;font-size:12px}
+</style>
+</head>
+<body>
+<header><div class="logo">🎮 WINMAX</div><div class="coins">🪙 <span id="coins">1000</span></div></header>
+<main>
+<section class="hero">
+<h1>Welcome to WINMAX</h1>
+<p>Play fun virtual-coin games. No deposits or withdrawals.</p>
+<button onclick="location.href='ludo.html'">🎲 Play Ludo</button>
+</section>
+<div class="stats">
+<div class="stat">Wins<b id="wins">0</b></div>
+<div class="stat">Losses<b id="losses">0</b></div>
+</div>
+<section class="grid">
+<div class="card"><h3>🎲 Ludo King</h3><p>Classic-style virtual Ludo game against a computer.</p><button onclick="location.href='ludo.html'">Play Now</button></div>
+<div class="card"><h3>⏱️ Win Go — 30 Seconds</h3><p>Demo game entry. Virtual coins only.</p><button onclick="alert('Win Go demo will be added next.')">Open</button></div>
+<div class="card"><h3>🧩 Puzzle World</h3><p>Coming soon.</p><button onclick="alert('Coming soon')">Open</button></div>
+</section>
+</main>
+<footer>WINMAX • Virtual coins only • No real-money deposits or withdrawals</footer>
+<script>
+document.getElementById('coins').textContent=localStorage.coins||1000;
+document.getElementById('wins').textContent=localStorage.wins||0;
+document.getElementById('losses').textContent=localStorage.losses||0;
+</script>
+</body>
+</html>

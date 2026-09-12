@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WINMAX Ludo</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101522;color:#fff;font-family:Arial,sans-serif}
+.wrap{max-width:520px;margin:auto;padding:14px}.top{display:flex;justify-content:space-between;align-items:center}
+h2{margin:6px 0}.stats{display:flex;gap:7px}.stat{background:#1b2435;padding:8px 10px;border-radius:10px;font-size:12px}
+.board{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;background:#252e42;padding:4px;border-radius:12px;margin-top:12px}
+.cell{aspect-ratio:1;background:#e9edf5;position:relative;border-radius:3px}.path{background:#fff}
+.r{background:#e85b5b}.g{background:#55b96a}.y{background:#f2c84b}.b{background:#4e8ee8}
+.home{display:flex;align-items:center;justify-content:center;font-size:10px;color:#111;font-weight:bold}
+.token{position:absolute;width:24px;height:24px;border-radius:50%;border:3px solid #fff;box-shadow:0 1px 4px #0008;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:bold}
+.red{background:#e53935}.green{background:#20a84a}.yellow{background:#d9a900}.blue{background:#2875d5}
+.controls{margin-top:12px;background:#1b2435;padding:12px;border-radius:12px;text-align:center}
+button{border:0;border-radius:10px;padding:11px 18px;font-weight:bold;font-size:16px;cursor:pointer}.dice{font-size:30px;margin:6px}
+.msg{min-height:22px;margin:5px;color:#cdd6e8}.new{margin-top:8px;background:#fff;color:#111}
+.note{font-size:11px;color:#9eabc2;margin-top:10px;text-align:center}
+</style></head>
+<body><div class="wrap">
+<div class="top"><h2>🎲 WINMAX Ludo</h2><div class="stats">
+<div class="stat">Wins<br><b id="wins">0</b></div><div class="stat">Losses<br><b id="losses">0</b></div><div class="stat">Coins<br><b id="coins">1000</b></div>
+</div></div>
+<div class="board" id="board"></div>
+<div class="controls"><div>Your turn</div><div class="dice" id="dice">🎲</div><button id="roll">ROLL DICE</button><div class="msg" id="msg">Roll the dice to start.</div><button class="new" id="new">New Game</button></div>
+<div class="note">Virtual coins only • No deposits or withdrawals</div>
+</div>
+<script>
+const board=document.getElementById('board'), dice=document.getElementById('dice'), msg=document.getElementById('msg');
+let wins=+localStorage.wins||0, losses=+localStorage.losses||0, coins=+localStorage.coins||1000;
+document.getElementById('wins').textContent=wins;document.getElementById('losses').textContent=losses;document.getElementById('coins').textContent=coins;
+const cells=[]; for(let i=0;i<36;i++){let d=document.createElement('div');d.className='cell path';board.appendChild(d);cells.push(d)}
+// 6x6 cross-style playable route (prototype layout)
+const route=[0,1,2,3,4,5,11,17,23,29,35,34,33,32,31,30,24,18,12,6,7,8,9,10,16,22,28,27,26,25,19,13];
+route.forEach((n,i)=>{cells[n].textContent=i+1});
+let player=0, ai=0, active=true;
+function token(cls,pos){let t=document.createElement('div');t.className='token '+cls;t.textContent='●';cells[pos].appendChild(t)}
+function render(){cells.forEach(c=>{c.querySelectorAll('.token').forEach(x=>x.remove())}); token('red',route[player]); token('blue',route[ai]);}
+render();
+document.getElementById('roll').onclick=()=>{
+ if(!active)return;
+ let n=Math.floor(Math.random()*6)+1; dice.textContent='🎲 '+n;
+ player+=n;
+ if(player>=route.length){wins++;coins+=100;active=false;save();msg.textContent='🏆 You won! +100 virtual coins';render();return}
+ if(player===ai && ai>0){player++}
+ render();msg.textContent='You moved '+n+' spaces. Computer turn...';
+ setTimeout(()=>{let a=Math.floor(Math.random()*6)+1;ai+=a;
+   if(ai>=route.length){losses++;coins=Math.max(0,coins-50);active=false;save();msg.textContent='😔 Computer won. -50 virtual coins';render();return}
+   if(ai===player && player>0) ai++;
+   render();msg.textContent='Computer rolled '+a+'. Your turn.';
+ },650);
+};
+document.getElementById('new').onclick=()=>{player=0;ai=0;active=true;dice.textContent='🎲';msg.textContent='New game started. Roll the dice.';render()};
+function save(){localStorage.wins=wins;localStorage.losses=losses;localStorage.coins=coins;
+ document.getElementById('wins').textContent=wins;document.getElementById('losses').textContent=losses;document.getElementById('coins').textContent=coins}
+</script></body></html>
