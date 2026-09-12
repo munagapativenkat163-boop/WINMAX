@@ -1,57 +1,155 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>WINMAX Ludo</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#101522;color:#fff;font-family:Arial,sans-serif}
-.wrap{max-width:520px;margin:auto;padding:14px}.top{display:flex;justify-content:space-between;align-items:center}
-h2{margin:6px 0}.stats{display:flex;gap:7px}.stat{background:#1b2435;padding:8px 10px;border-radius:10px;font-size:12px}
-.board{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;background:#252e42;padding:4px;border-radius:12px;margin-top:12px}
-.cell{aspect-ratio:1;background:#e9edf5;position:relative;border-radius:3px}.path{background:#fff}
-.r{background:#e85b5b}.g{background:#55b96a}.y{background:#f2c84b}.b{background:#4e8ee8}
-.home{display:flex;align-items:center;justify-content:center;font-size:10px;color:#111;font-weight:bold}
-.token{position:absolute;width:24px;height:24px;border-radius:50%;border:3px solid #fff;box-shadow:0 1px 4px #0008;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:bold}
-.red{background:#e53935}.green{background:#20a84a}.yellow{background:#d9a900}.blue{background:#2875d5}
-.controls{margin-top:12px;background:#1b2435;padding:12px;border-radius:12px;text-align:center}
-button{border:0;border-radius:10px;padding:11px 18px;font-weight:bold;font-size:16px;cursor:pointer}.dice{font-size:30px;margin:6px}
-.msg{min-height:22px;margin:5px;color:#cdd6e8}.new{margin-top:8px;background:#fff;color:#111}
-.note{font-size:11px;color:#9eabc2;margin-top:10px;text-align:center}
-</style></head>
-<body><div class="wrap">
-<div class="top"><h2>🎲 WINMAX Ludo</h2><div class="stats">
-<div class="stat">Wins<br><b id="wins">0</b></div><div class="stat">Losses<br><b id="losses">0</b></div><div class="stat">Coins<br><b id="coins">1000</b></div>
-</div></div>
-<div class="board" id="board"></div>
-<div class="controls"><div>Your turn</div><div class="dice" id="dice">🎲</div><button id="roll">ROLL DICE</button><div class="msg" id="msg">Roll the dice to start.</div><button class="new" id="new">New Game</button></div>
-<div class="note">Virtual coins only • No deposits or withdrawals</div>
+*{box-sizing:border-box}body{margin:0;background:#0b1220;color:#fff;font-family:Arial,sans-serif}
+.wrap{max-width:620px;margin:auto;padding:12px}
+.top{display:flex;justify-content:space-between;align-items:center;background:#17233b;padding:12px 14px;border-radius:14px;margin-bottom:10px}
+h1{font-size:25px;margin:0}.coins{background:#243653;padding:9px 14px;border-radius:22px}
+.info{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.pill{background:#17233b;padding:8px 10px;border-radius:10px;font-size:14px}
+.board{width:min(94vw,590px);aspect-ratio:1;background:#dfe7ef;border:5px solid #111827;border-radius:10px;display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);overflow:hidden;margin:auto}
+.cell{border:1px solid #b9c4d0;position:relative;background:#fff}
+.red{background:#e85b5b}.green{background:#59b56a}.yellow{background:#f1c84b}.blue{background:#4e82df}
+.path{background:#f8fafc}.safe{background:#dbeafe!important}
+.center{grid-column:7/10;grid-row:7/10;background:conic-gradient(#e85b5b 0 25%,#f1c84b 25% 50%,#59b56a 50% 75%,#4e82df 75%);border:2px solid #111827}
+.base{margin:3px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px}
+.token{width:76%;height:76%;border-radius:50%;position:absolute;left:12%;top:12%;border:2px solid #111827;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#fff;box-shadow:0 2px 3px #0005}
+.tred{background:#d62f2f}.tgreen{background:#239447}.tyellow{background:#d7a900;color:#111}.tblue{background:#2864ca}
+.controls{background:#17233b;margin-top:10px;padding:12px;border-radius:14px;text-align:center}
+.dice{font-size:42px;font-weight:bold;margin:3px}.turn{font-size:18px;font-weight:bold}.msg{min-height:22px;color:#cbd5e1;font-size:14px;margin:6px}
+button{border:0;border-radius:11px;padding:12px 18px;font-weight:bold;font-size:16px;background:#fff;color:#111;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}.new{background:#4ade80;margin-left:7px}
+.legend{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;font-size:12px;text-align:center}
+.l{padding:7px;border-radius:8px}.lr{background:#e85b5b}.lg{background:#59b56a}.ly{background:#f1c84b;color:#111}.lb{background:#4e82df}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="top"><h1>🎮 WINMAX Ludo</h1><div class="coins">🪙 <span id="coins">1000</span></div></div>
+ <div class="info"><div class="pill">👤 You: <b>Red</b></div><div class="pill">🤖 Green</div><div class="pill">🤖 Yellow</div><div class="pill">🤖 Blue</div></div>
+ <div id="board" class="board"></div>
+ <div class="controls">
+   <div class="turn" id="turn">Your turn</div>
+   <div class="dice" id="dice">🎲</div>
+   <div class="msg" id="msg">Roll the dice. Roll 6 to bring a token out.</div>
+   <button id="roll">ROLL DICE</button><button class="new" id="new">NEW GAME</button>
+ </div>
+ <div class="legend"><div class="l lr">🔴 You</div><div class="l lg">🟢 CPU</div><div class="l ly">🟡 CPU</div><div class="l lb">🔵 CPU</div></div>
 </div>
 <script>
-const board=document.getElementById('board'), dice=document.getElementById('dice'), msg=document.getElementById('msg');
-let wins=+localStorage.wins||0, losses=+localStorage.losses||0, coins=+localStorage.coins||1000;
-document.getElementById('wins').textContent=wins;document.getElementById('losses').textContent=losses;document.getElementById('coins').textContent=coins;
-const cells=[]; for(let i=0;i<36;i++){let d=document.createElement('div');d.className='cell path';board.appendChild(d);cells.push(d)}
-// 6x6 cross-style playable route (prototype layout)
-const route=[0,1,2,3,4,5,11,17,23,29,35,34,33,32,31,30,24,18,12,6,7,8,9,10,16,22,28,27,26,25,19,13];
-route.forEach((n,i)=>{cells[n].textContent=i+1});
-let player=0, ai=0, active=true;
-function token(cls,pos){let t=document.createElement('div');t.className='token '+cls;t.textContent='●';cells[pos].appendChild(t)}
-function render(){cells.forEach(c=>{c.querySelectorAll('.token').forEach(x=>x.remove())}); token('red',route[player]); token('blue',route[ai]);}
-render();
-document.getElementById('roll').onclick=()=>{
- if(!active)return;
- let n=Math.floor(Math.random()*6)+1; dice.textContent='🎲 '+n;
- player+=n;
- if(player>=route.length){wins++;coins+=100;active=false;save();msg.textContent='🏆 You won! +100 virtual coins';render();return}
- if(player===ai && ai>0){player++}
- render();msg.textContent='You moved '+n+' spaces. Computer turn...';
- setTimeout(()=>{let a=Math.floor(Math.random()*6)+1;ai+=a;
-   if(ai>=route.length){losses++;coins=Math.max(0,coins-50);active=false;save();msg.textContent='😔 Computer won. -50 virtual coins';render();return}
-   if(ai===player && player>0) ai++;
-   render();msg.textContent='Computer rolled '+a+'. Your turn.';
- },650);
-};
-document.getElementById('new').onclick=()=>{player=0;ai=0;active=true;dice.textContent='🎲';msg.textContent='New game started. Roll the dice.';render()};
-function save(){localStorage.wins=wins;localStorage.losses=losses;localStorage.coins=coins;
- document.getElementById('wins').textContent=wins;document.getElementById('losses').textContent=losses;document.getElementById('coins').textContent=coins}
-</script></body></html>
+const path=[
+[6,1],[6,2],[6,3],[6,4],[6,5],[5,6],[4,6],[3,6],[2,6],[1,6],[0,6],[0,7],[0,8],
+[1,8],[2,8],[3,8],[4,8],[5,8],[6,9],[6,10],[6,11],[6,12],[6,13],[6,14],[7,14],[8,14],
+[8,13],[8,12],[8,11],[8,10],[8,9],[9,8],[10,8],[11,8],[12,8],[13,8],[14,8],[14,7],[14,6],
+[13,6],[12,6],[11,6],[10,6],[9,6],[8,5],[8,4],[8,3],[8,2],[8,1],[8,0],[7,0],[6,0]
+];
+const starts=[0,13,26,39], colors=['red','green','yellow','blue'];
+const home=[
+[[2,2],[2,4],[4,2],[4,4]],[[2,10],[2,12],[4,10],[4,12]],
+[[10,10],[10,12],[12,10],[12,12]],[[10,2],[10,4],[12,2],[12,4]]
+];
+let players,turn=0,rollValue=0,waiting=false,coins=1000;
+const $=id=>document.getElementById(id);
+function makeBoard(){
+ const b=$('board'); b.innerHTML='';
+ for(let r=0;r<15;r++)for(let c=0;c<15;c++){
+  const d=document.createElement('div'); d.className='cell';
+  if(r<6&&c<6)d.classList.add('red');
+  if(r<6&&c>8)d.classList.add('green');
+  if(r>8&&c>8)d.classList.add('yellow');
+  if(r>8&&c<6)d.classList.add('blue');
+  const idx=path.findIndex(p=>p[0]===r&&p[1]===c);
+  if(idx>=0){d.className='cell path'; if([0,8,13,21,26,34,39,47].includes(idx))d.classList.add('safe'); d.dataset.i=idx}
+  if(r>=6&&r<=8&&c>=6&&c<=8)d.className='cell center';
+  if(home.flat().some(p=>p[0]===r&&p[1]===c))d.classList.add('base');
+  d.id=`c-${r}-${c}`; b.appendChild(d);
+ }
+}
+function state(){return players.map(p=>p.tokens.map(t=>t.pos))}
+function render(){
+ document.querySelectorAll('.token').forEach(x=>x.remove());
+ players.forEach((p,pi)=>p.tokens.forEach((t,ti)=>{
+   let rc;
+   if(t.pos<0) rc=home[pi][ti];
+   else if(t.pos>=52) rc=home[pi][ti];
+   else rc=path[(starts[pi]+t.pos)%52];
+   const d=$(`c-${rc[0]}-${rc[1]}`); if(!d)return;
+   const el=document.createElement('div'); el.className=`token t${colors[pi]}`; el.textContent=ti+1;
+   el.title=`${colors[pi]} token ${ti+1}`;
+   if(pi===0&&turn===0&&!waiting&&t.pos>=0&&t.pos<52){el.style.cursor='pointer';el.onclick=()=>chooseToken(ti)}
+   d.appendChild(el);
+ }));
+ $('coins').textContent=coins;
+ $('turn').textContent=turn===0?'🔴 Your turn':`🤖 ${colors[turn].toUpperCase()} CPU turn`;
+}
+function reset(){
+ players=colors.map(c=>({color:c,tokens:[{pos:-1},{pos:-1},{pos:-1},{pos:-1}]}));
+ turn=0;rollValue=0;waiting=false;$('dice').textContent='🎲';$('msg').textContent='Roll the dice. Roll 6 to bring a token out.';render();
+}
+function legal(pi){
+ return players[pi].tokens.map((t,i)=>{
+   if(t.pos<0)return rollValue===6;
+   return t.pos+rollValue<=57;
+ }).map((v,i)=>v?i:-1).filter(i=>i>=0);
+}
+function chooseToken(i){
+ if(turn!==0||!waiting)return;
+ const ok=legal(0); if(!ok.includes(i))return;
+ move(0,i);
+}
+function roll(){
+ if(turn!==0||waiting)return;
+ rollValue=1+Math.floor(Math.random()*6);$('dice').textContent='🎲 '+rollValue;
+ const moves=legal(0);
+ if(!moves.length){$('msg').textContent='No legal move. Turn passes.';waiting=true;setTimeout(nextTurn,850);return}
+ waiting=true;
+ $('msg').textContent=moves.length===1?'Tap the highlighted token to move.':'Choose a token to move.';
+ render();
+ if(moves.length===1){setTimeout(()=>chooseToken(moves[0]),450)}
+}
+function move(pi,ti){
+ const t=players[pi].tokens[ti];
+ if(t.pos<0)t.pos=0;else t.pos+=rollValue;
+ capture(pi,t);
+ if(players[pi].tokens.every(x=>x.pos>=52)){finish(pi);return}
+ const extra=rollValue===6;
+ rollValue=0;waiting=false;render();
+ if(extra){$('msg').textContent='🎉 Rolled 6 — you get another turn!';}
+ else nextTurn();
+}
+function capture(pi,t){
+ if(t.pos<0||t.pos>=52)return;
+ const abs=(starts[pi]+t.pos)%52;
+ const safe=[0,8,13,21,26,34,39,47].includes(abs);
+ if(safe)return;
+ players.forEach((p,oi)=>{if(oi===pi)return;p.tokens.forEach(x=>{
+   if(x.pos>=0&&x.pos<52&&((starts[oi]+x.pos)%52)===abs)x.pos=-1;
+ })});
+}
+function nextTurn(){
+ if(rollValue===6)return;
+ turn=(turn+1)%4;rollValue=0;waiting=false;render();
+ if(turn!==0){setTimeout(cpuTurn,650)}
+}
+function cpuTurn(){
+ const v=1+Math.floor(Math.random()*6);rollValue=v;$('dice').textContent='🎲 '+v;
+ const moves=legal(turn);
+ if(!moves.length){$('msg').textContent=`${colors[turn]} CPU cannot move.`;setTimeout(nextTurn,700);return}
+ let ti=moves.find(i=>players[turn].tokens[i].pos>=0)||moves[0];
+ if(v===6&&moves.some(i=>players[turn].tokens[i].pos<0))ti=moves.find(i=>players[turn].tokens[i].pos<0);
+ $('msg').textContent=`${colors[turn]} CPU rolled ${v}.`;
+ setTimeout(()=>move(turn,ti),600);
+}
+function finish(pi){
+ if(pi===0){coins+=100;$('msg').textContent='🏆 YOU WIN! +100 virtual coins.'}
+ else $('msg').textContent=`${colors[pi].toUpperCase()} CPU WINS!`;
+ waiting=true;render();$('roll').disabled=true;
+}
+$('roll').onclick=roll;$('new').onclick=()=>{$('roll').disabled=false;reset()};
+makeBoard();reset();
+</script>
+</body>
+</html>
